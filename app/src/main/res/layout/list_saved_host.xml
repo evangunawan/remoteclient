@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="wrap_content"
+    android:layout_height="fill_parent"
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:padding="20dp"
     xmlns:tool="http://schemas.android.com/tools">
 
     <TextView
+        android:id="@+id/txtHostTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        tool:text="Item Name"
+        tool:text="Title"
         />
 
     <TextView
+        android:id = "@+id/txtHostIp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="13sp"
-        android:textColor="#888"
+        android:textSize="12sp"
+        android:textColor="#aaaa"
         tool:text = "Subtitle"
         />
 
