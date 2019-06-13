@@ -50,7 +50,7 @@ public class DashboardActivity extends AppCompatActivity {
         socket = SocketHandler.getSocket();
         populateData();
 
-        adapter = new ArrayAdapter(DashboardActivity.this, R.layout.layout_listview, commandList);
+        adapter = new ArrayAdapter(DashboardActivity.this, R.layout.list_dashboard, commandList);
         listView = (ListView) findViewById(R.id.controls_listView);
         listView.setAdapter(adapter);
         listView.setClickable(true);

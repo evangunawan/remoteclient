@@ -38,7 +38,7 @@ public class ControlListAdapter extends BaseAdapter {
         final View result;
 
         if (convertView == null) {
-            result = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_listview, parent, false);
+            result = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_dashboard, parent, false);
         } else {
             result = convertView;
         }
