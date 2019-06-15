@@ -6,4 +6,9 @@
         android:title="@string/action_addHost"
         android:icon="@drawable/ic_add_white_24dp"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_remove_all"
+        android:title="Remove All"
+        app:showAsAction="never"
+        />
 </menu>

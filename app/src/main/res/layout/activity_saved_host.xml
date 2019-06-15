@@ -27,6 +27,18 @@
             />
     </android.support.v7.widget.Toolbar>
 
+    <TextView
+        android:id="@+id/txtEmptyPrompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:visibility="gone"
+        android:text="It's empty :(\nAdd a new host by clicking the button above."
+        app:layout_constraintBottom_toBottomOf="@+id/listHosts"
+        app:layout_constraintEnd_toEndOf="@+id/listHosts"
+        app:layout_constraintStart_toStartOf="@+id/listHosts"
+        app:layout_constraintTop_toTopOf="@+id/listHosts" />
+
     <ListView
         android:id="@+id/listHosts"
         android:layout_width="match_parent"

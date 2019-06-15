@@ -1,5 +1,7 @@
 package me.vincevan.myremoteapp;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
@@ -19,14 +21,19 @@ import java.net.Socket;
 //Please use static class SocketHandler to get OOS/OIS/Socket.
 
 public class RemoteClient extends AsyncTask<Void,Void,Boolean> {
-    private MainActivity mainActivity;
+    private Activity activity = null;
     private Socket socket;
     private String host;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
 
-    public RemoteClient(Socket s,String host, MainActivity mainactivity){
-        this.mainActivity = mainactivity;
+    public RemoteClient(Socket s, String host){
+        this.socket = s;
+        this.host = host;
+    }
+
+    public RemoteClient(Socket s,String host, Activity activity){
+        this.activity = activity;
         this.host = host;
         this.socket = s;
     }
@@ -69,18 +76,32 @@ public class RemoteClient extends AsyncTask<Void,Void,Boolean> {
     @Override
     protected void onPostExecute(Boolean result) {
         if(result == true){
-            mainActivity.startDashboard();
+            //Start Dashboard Activity
+            activity.startActivity(new Intent(activity,DashboardActivity.class));
         }else{
-            Toast.makeText(mainActivity.getApplicationContext(),"Failed to connect" ,Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity.getApplicationContext(),"Failed to connect" ,Toast.LENGTH_SHORT).show();
         }
 
         //Make sure the button is secured when launching the activity. To avoid bug or double clicking and open 2 activities we need to delay the button enable.
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mainActivity.enableInterfaceObjects();
-            }
-        }, 1000);
+        if(activity instanceof MainActivity){
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ((MainActivity) activity).enableInterfaceObjects();
+                }
+            }, 1000);
+        }
+        if(activity instanceof SavedHostActivity){
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ((SavedHostActivity) activity).setListViewEnabled(true);
+                }
+            }, 1000);
+        }
+
     }
+
 }

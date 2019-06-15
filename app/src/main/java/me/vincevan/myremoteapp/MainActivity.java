@@ -5,6 +5,8 @@ import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
     RemoteClient remoteClient;
     EditText editHost;
     Socket socket;
-    ImageButton savedHostButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
 
         editHost = (EditText) findViewById(R.id.editHostIp);
         btnConnect = (Button) findViewById(R.id.btnConnect);
-        savedHostButton = (ImageButton)findViewById(R.id.savedHostBtn);
 
         btnConnect.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -53,22 +53,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        savedHostButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu_main,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.action_open_saved_host:
                 Intent savedHosts = new Intent(getApplicationContext(),SavedHostActivity.class);
                 startActivity(savedHosts);
-            }
-        });
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
 
     }
-
-    protected void startDashboard(){
-        Intent dashboard = new Intent(this,DashboardActivity.class);
-//        dashboard.putExtra("RemoteConnection",remoteConnection);
-        startActivity(dashboard);
-    }
-
     protected void enableInterfaceObjects(){
 
         this.editHost.setEnabled(true);

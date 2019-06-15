@@ -2,6 +2,7 @@ package me.vincevan.myremoteapp;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,17 +25,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import me.vincevan.myremoteapp.model.SavedHostItem;
 
 public class SavedHostActivity extends AppCompatActivity {
 
     private EditText txtDialogName;
     private EditText txtDialogIp;
     private ListView hostListView;
-    private HostListAdapter adapter;
-    private Map<String,String> hostList;
+    private ArrayAdapter adapter;
+    private ArrayList<SavedHostItem> hostList;
+    private RemoteClient remoteClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,18 +61,11 @@ public class SavedHostActivity extends AppCompatActivity {
             }
         });
 
-        //Populate Data
-        //Dummy data
-        hostList = new HashMap<>();
-        hostList.put("Test","0.0.0.0");
-
         //Populate data from file
-        for(Map<String,String> hostItem : readHostList(this)){
-            for(Map.Entry<String,String> entry : hostItem.entrySet()){
-                hostList.put(entry.getKey(), entry.getValue());
-            }
-        }
+        hostList = new ArrayList<SavedHostItem>();
         adapter = new HostListAdapter(this,hostList);
+        loadListItems();
+        adapter.notifyDataSetChanged();
 
         hostListView.setAdapter(adapter);
         hostListView.setClickable(true);
@@ -82,6 +81,22 @@ public class SavedHostActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        hostListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Socket socket = new Socket();
+                hostListView.setEnabled(false);
+                Toast.makeText(getApplicationContext(),"Connecting to host..", Toast.LENGTH_SHORT).show();
+                remoteClient = new RemoteClient(socket,hostList.get(position).getHostAddress(),SavedHostActivity.this);
+                remoteClient.execute();
+
+            }
+        });
+
+        if(hostList.isEmpty()){
+            findViewById(R.id.txtEmptyPrompt).setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -119,7 +134,10 @@ public class SavedHostActivity extends AppCompatActivity {
                 if(txtDialogName.getText().toString()!=null || !txtDialogName.getText().toString().isEmpty() || isIpAddress(txtDialogIp.getText().toString())){
                     writeHostToFile(txtDialogName.getText().toString(),txtDialogIp.getText().toString(),getApplicationContext());
                     Toast.makeText(getApplicationContext(),"Host Added",Toast.LENGTH_SHORT).show();
-                    adapter.notifyDataSetChanged(); //Shit is not working yo
+                    loadListItems();
+                    adapter.notifyDataSetChanged();
+                    findViewById(R.id.txtEmptyPrompt).setVisibility(View.GONE);
+
                 }else{
                     Toast.makeText(getApplicationContext(),"Wrong Input",Toast.LENGTH_SHORT).show();
                 }
@@ -148,9 +166,8 @@ public class SavedHostActivity extends AppCompatActivity {
     }
 
     //Read Hosts from File
-    private ArrayList<Map<String,String>> readHostList(Context context){
-        ArrayList<Map<String,String>> result = new ArrayList<>();
-
+    private ArrayList<SavedHostItem> readHostList(Context context){
+        ArrayList<SavedHostItem> result = new ArrayList<>();
         try{
             InputStream inputStream = context.openFileInput("hosts.dat");
             if(inputStream != null){
@@ -161,10 +178,7 @@ public class SavedHostActivity extends AppCompatActivity {
 
                 while((receivedLine = bufferedReader.readLine()) != null){
                     lineValues = receivedLine.split(":");
-
-                    HashMap<String,String> lineMap = new HashMap<>();
-                    lineMap.put(lineValues[0],lineValues[1]);
-                    result.add(lineMap);
+                    result.add(new SavedHostItem(lineValues[0],lineValues[1]));
                 }
             }
         } catch (FileNotFoundException ex){
@@ -173,6 +187,23 @@ public class SavedHostActivity extends AppCompatActivity {
             Log.e("Exception", ex.getMessage());
         }
         return result;
+    }
+
+    private void loadListItems(){
+        hostList.clear();
+        for(SavedHostItem item : readHostList(this)){
+            hostList.add(item);
+        }
+        adapter.notifyDataSetChanged();
+
+    }
+
+    public void setListViewEnabled(Boolean b){
+        if(b==true){
+            this.hostListView.setEnabled(true);
+        }else{
+            this.hostListView.setEnabled(false);
+        }
     }
 
     private Boolean isIpAddress(String ip){

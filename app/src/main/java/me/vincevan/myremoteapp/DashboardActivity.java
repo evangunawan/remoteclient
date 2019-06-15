@@ -15,6 +15,8 @@ import android.widget.TextView;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import me.vincevan.myremoteapp.model.Command;
+
 public class DashboardActivity extends AppCompatActivity {
 
     private Integer commandToSend = 0;

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Remote Application</string>
     <string name="action_addHost">Add Host</string>
+    <string name="action_open_saved_hosts">Saved Hosts</string>
 </resources>

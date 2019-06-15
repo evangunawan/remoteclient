@@ -5,58 +5,42 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-public class HostListAdapter extends BaseAdapter {
+import me.vincevan.myremoteapp.model.SavedHostItem;
 
-    private TextView txtTitle;
-    private TextView txtSubtitle;
-    private Context mContext;
-    private ArrayList mData;
+public class HostListAdapter extends ArrayAdapter<SavedHostItem> {
+    private List<SavedHostItem> itemList;
+    private Context context;
 
-    public HostListAdapter(Context context, Map<String, String> map) {
-        this.mContext = context;
-        mData = new ArrayList();
-        mData.addAll(map.entrySet());
+    public HostListAdapter(Context context, List<SavedHostItem> objects) {
+        super(context,0,objects);
+        this.context = context;
+        this.itemList = objects;
     }
 
     @Override
-    public int getCount() {
-        return mData.size();
-    }
+    public View getView(int position, View convertView, ViewGroup parent){
+        final SavedHostItem item = getItem(position);
 
-    @Override
-    public Map.Entry<String, String> getItem(int position) {
-        return (Map.Entry) mData.get(position);
-    }
+        if(convertView==null){
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_saved_host,parent,false);
 
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View v = convertView;
-
-        if (v == null) {
-            LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-            v = layoutInflater.inflate(R.layout.list_saved_host,null);
-
-            txtTitle = v.findViewById(R.id.txtHostTitle);
-            txtSubtitle = v.findViewById(R.id.txtHostIp);
         }
 
-        Map.Entry<String,String> p = getItem(position);
-        if (p!=null){
-            txtTitle.setText(p.getKey());
-            txtSubtitle.setText("IP: " + p.getValue());
-        }
+        TextView hostName = convertView.findViewById(R.id.txtHostTitle);
+        TextView hostAddress = convertView.findViewById(R.id.txtHostIp);
 
-        return v;
+        hostName.setText(item.getHostName());
+        hostAddress.setText("IP: " + item.getHostAddress());
+
+        return convertView;
+
     }
 }

@@ -16,16 +16,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-        <ImageButton
-            android:id="@+id/savedHostBtn"
-            android:scaleType="fitCenter"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_gravity="end"
-            android:layout_marginRight="32px"
-            android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_book_white_24dp"
-             />
     </android.support.v7.widget.Toolbar>
 
     <Button
