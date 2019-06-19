@@ -8,18 +8,22 @@
         android:id="@+id/txtDialogName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="24dp"
         android:layout_marginTop="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginRight="24dp"
+        android:singleLine="true"
+        android:maxLines="1"
         android:hint="Host Name" />
 
     <EditText
         android:id="@+id/txtDialogIp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="24dp"
         android:layout_marginTop="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginRight="24dp"
+        android:singleLine="true"
+        android:maxLines="1"
         android:hint="Host IP"
         android:inputType="phone" />
 

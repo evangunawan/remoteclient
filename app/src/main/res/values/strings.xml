@@ -2,4 +2,6 @@
     <string name="app_name">Remote Application</string>
     <string name="action_addHost">Add Host</string>
     <string name="action_open_saved_hosts">Saved Hosts</string>
+    <string name="ans_yes">Yes</string>
+    <string name="ans_cancel">Cancel</string>
 </resources>

@@ -2,12 +2,12 @@ package me.vincevan.myremoteapp;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,12 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import me.vincevan.myremoteapp.model.SavedHostItem;
 
@@ -73,8 +69,9 @@ public class SavedHostActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
-                //TODO: REMOVE SELECTED ITEM'S LINE FROM THE FRICKIN FILE.
-                //Create new method for that.
+                deleteLine(position,getApplicationContext());
+                loadListItems();
+                showEmptyTextView();
 
                 adapter.notifyDataSetChanged();
                 Toast.makeText(getApplicationContext(),"Item Removed", Toast.LENGTH_SHORT).show();
@@ -93,10 +90,8 @@ public class SavedHostActivity extends AppCompatActivity {
 
             }
         });
+        showEmptyTextView();
 
-        if(hostList.isEmpty()){
-            findViewById(R.id.txtEmptyPrompt).setVisibility(View.VISIBLE);
-        }
     }
 
     @Override
@@ -105,12 +100,15 @@ public class SavedHostActivity extends AppCompatActivity {
         return true;
     }
 
+    //Menu items click handler
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
             case R.id.action_add:
                 addNewHost();
-
+                return true;
+            case R.id.action_remove_all:
+                deleteAllHosts(this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -131,7 +129,7 @@ public class SavedHostActivity extends AppCompatActivity {
         builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(txtDialogName.getText().toString()!=null || !txtDialogName.getText().toString().isEmpty() || isIpAddress(txtDialogIp.getText().toString())){
+                if(txtDialogName.getText().toString()!=null && !txtDialogName.getText().toString().isEmpty() && isIpAddress(txtDialogIp.getText().toString())){
                     writeHostToFile(txtDialogName.getText().toString(),txtDialogIp.getText().toString(),getApplicationContext());
                     Toast.makeText(getApplicationContext(),"Host Added",Toast.LENGTH_SHORT).show();
                     loadListItems();
@@ -189,6 +187,48 @@ public class SavedHostActivity extends AppCompatActivity {
         return result;
     }
 
+    private void deleteLine(int position, Context context){
+        ArrayList<SavedHostItem> newLines = new ArrayList<>();
+        for (int i = 0 ; i < hostList.size(); i++){
+            if(i!=position){
+                newLines.add(hostList.get(i));
+            }
+        }
+
+        try{
+            OutputStreamWriter osw = new OutputStreamWriter(context.openFileOutput("hosts.dat",Context.MODE_PRIVATE));
+            for(SavedHostItem item : newLines){
+                osw.write(item.getHostName() + ":" + item.getHostAddress() + "\n");
+            }
+
+            osw.close();
+        }catch(IOException ex){
+            Log.e("Exception", ex.getMessage());
+        }
+    }
+
+    private void deleteAllHosts(Context context){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Delete all saved host?")
+                .setPositiveButton(R.string.ans_yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        getApplicationContext().deleteFile("hosts.dat");
+                        loadListItems();
+                        showEmptyTextView();
+                        adapter.notifyDataSetChanged();
+                    }
+                })
+                .setNegativeButton(R.string.ans_cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+    }
+
     private void loadListItems(){
         hostList.clear();
         for(SavedHostItem item : readHostList(this)){
@@ -203,6 +243,12 @@ public class SavedHostActivity extends AppCompatActivity {
             this.hostListView.setEnabled(true);
         }else{
             this.hostListView.setEnabled(false);
+        }
+    }
+
+    private void showEmptyTextView(){
+        if(hostList.isEmpty()){
+            findViewById(R.id.txtEmptyPrompt).setVisibility(View.VISIBLE);
         }
     }
 
