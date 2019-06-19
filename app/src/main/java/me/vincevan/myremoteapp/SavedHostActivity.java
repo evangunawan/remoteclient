@@ -65,10 +65,11 @@ public class SavedHostActivity extends AppCompatActivity {
 
         hostListView.setAdapter(adapter);
         hostListView.setClickable(true);
+
+        //Set Long Click Listener for item in listview
         hostListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-
                 deleteLine(position,getApplicationContext());
                 loadListItems();
                 showEmptyTextView();
@@ -79,6 +80,8 @@ public class SavedHostActivity extends AppCompatActivity {
             }
         });
 
+
+        //Set Click Listener for saved host item in listview
         hostListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -87,7 +90,6 @@ public class SavedHostActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Connecting to host..", Toast.LENGTH_SHORT).show();
                 remoteClient = new RemoteClient(socket,hostList.get(position).getHostAddress(),SavedHostActivity.this);
                 remoteClient.execute();
-
             }
         });
         showEmptyTextView();
@@ -115,6 +117,8 @@ public class SavedHostActivity extends AppCompatActivity {
         }
 
     }
+
+    //Private Functions
 
     private void addNewHost(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
